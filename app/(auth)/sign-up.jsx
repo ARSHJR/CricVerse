@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, Alert, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import FormField from '../../components/FormField';
 import { auth } from '../../services/firebase';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { COLORS, FONTS, SHADOWS } from '../../constants/theme';
 
 const SignUp = () => {
   const router = useRouter();
@@ -54,47 +55,58 @@ const SignUp = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>Create Account</Text>
-        <Text style={styles.subtitle}>Sign up to get started with CricVerse</Text>
+        <View style={styles.logoContainer}>
+          <Image
+            source={require('../../assets/CV_LOGO.jpg')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+        </View>
 
-        <FormField
-          title="Name"
-          value={form.name}
-          placeholder="Enter your name"
-          handleChangeText={(val) => setForm({ ...form, name: val })}
-        />
-        <FormField
-          title="Email"
-          value={form.email}
-          placeholder="Enter your email"
-          handleChangeText={(val) => setForm({ ...form, email: val })}
-        />
-        <FormField
-          title="Password"
-          value={form.password}
-          placeholder="Create a password"
-          handleChangeText={(val) => setForm({ ...form, password: val })}
-        />
+        <View style={styles.formContainer}>
+          <Text style={styles.title}>Create Account</Text>
+          <Text style={styles.subtitle}>Sign up to get started with CricVerse</Text>
 
-        <TouchableOpacity
-          style={[styles.primaryButton, isSubmitting && styles.disabledButton]}
-          onPress={submit}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.primaryButtonText}>Sign Up</Text>
-          )}
-        </TouchableOpacity>
+          <FormField
+            title="Name"
+            value={form.name}
+            placeholder="Enter your name"
+            handleChangeText={(val) => setForm({ ...form, name: val })}
+          />
+          <FormField
+            title="Email"
+            value={form.email}
+            placeholder="Enter your email"
+            handleChangeText={(val) => setForm({ ...form, email: val })}
+          />
+          <FormField
+            title="Password"
+            value={form.password}
+            placeholder="Create a password"
+            handleChangeText={(val) => setForm({ ...form, password: val })}
+            secureTextEntry
+          />
 
-        <View style={styles.linkWrapper}>
-          <Text style={styles.linkText}>
-            Already have an account?{' '}
-            <Text style={styles.link} onPress={() => router.replace('/sign-in')}>
-              Sign in
+          <TouchableOpacity
+            style={[styles.primaryButton, isSubmitting && styles.disabledButton]}
+            onPress={submit}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.primaryButtonText}>Sign Up</Text>
+            )}
+          </TouchableOpacity>
+
+          <View style={styles.linkWrapper}>
+            <Text style={styles.linkText}>
+              Already have an account?{' '}
+              <Text style={styles.link} onPress={() => router.replace('/sign-in')}>
+                Sign in
+              </Text>
             </Text>
-          </Text>
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -106,35 +118,55 @@ export default SignUp;
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: COLORS.white,
   },
   container: {
+    flexGrow: 1,
+  },
+  logoContainer: {
+    alignItems: 'center',
+    paddingTop: 40,
+    paddingBottom: 20,
+    backgroundColor: COLORS.white,
+  },
+  logo: {
+    width: 240,
+    height: 80,
+  },
+  formContainer: {
+    flex: 1,
+    backgroundColor: COLORS.white,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
     padding: 24,
-    justifyContent: 'center',
+    ...SHADOWS.medium,
   },
   title: {
     fontSize: 28,
     fontWeight: '700',
     marginBottom: 10,
-    color: '#1e90ff',
+    color: COLORS.primary,
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
     marginBottom: 30,
-    color: '#555',
+    color: COLORS.gray,
+    textAlign: 'center',
   },
   primaryButton: {
-    backgroundColor: '#1e90ff',
-    paddingVertical: 14,
-    borderRadius: 10,
+    backgroundColor: '#FC9905',
+    paddingVertical: 16,
+    borderRadius: 12,
     alignItems: 'center',
     marginTop: 20,
+    ...SHADOWS.small,
   },
   disabledButton: {
     opacity: 0.6,
   },
   primaryButtonText: {
-    color: '#fff',
+    color: COLORS.white,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -144,10 +176,10 @@ const styles = StyleSheet.create({
   },
   linkText: {
     fontSize: 14,
-    color: '#333',
+    color: COLORS.gray,
   },
   link: {
-    color: '#1e90ff',
+    color: COLORS.primary,
     fontWeight: '600',
   },
 });

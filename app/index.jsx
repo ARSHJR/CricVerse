@@ -1,63 +1,94 @@
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, ImageBackground } from 'react-native';
 import { useRouter } from 'expo-router';
+import { COLORS, FONTS, SHADOWS } from '../constants/theme';
 
 export default function LandingPage() {
   const router = useRouter();
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Welcome to Cricverse</Text>
+    <ImageBackground 
+      source={require('../assets/cricket-bg.jpg')} 
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <View style={styles.overlay}>
+        <View style={styles.container}>
+          <Image
+            source={require('../assets/Logo.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => router.push('/(auth)/sign-in')}
+            >
+              <Text style={styles.buttonText}>Sign In</Text>
+            </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.push('/(auth)/sign-in')}
-      >
-        <Text style={styles.buttonText}>Sign In</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.buttonOutline}
-        onPress={() => router.push('/(auth)/sign-up')}
-      >
-        <Text style={styles.buttonOutlineText}>Sign Up</Text>
-      </TouchableOpacity>
-    </View>
+            <TouchableOpacity
+              style={styles.buttonOutline}
+              onPress={() => router.push('/(auth)/sign-up')}
+            >
+              <Text style={styles.buttonOutlineText}>Sign Up</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#fff',
+    padding: 40,
+    paddingTop: 100,
+    paddingBottom: 80,
   },
-  title: {
-    fontSize: 26,
-    fontWeight: 'bold',
+  logo: {
+    width: 320,
+    height: 100,
     marginBottom: 40,
   },
+  buttonContainer: {
+    width: '100%',
+  },
   button: {
-    backgroundColor: '#1e90ff',
-    paddingVertical: 12,
-    paddingHorizontal: 30,
-    borderRadius: 8,
+    backgroundColor: COLORS.primary,
+    paddingVertical: 16,
+    borderRadius: 12,
     marginBottom: 16,
+    width: '100%',
+    ...SHADOWS.medium,
   },
   buttonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 18,
+    fontWeight: '600',
+    textAlign: 'center',
   },
   buttonOutline: {
-    borderWidth: 1,
-    borderColor: '#1e90ff',
-    paddingVertical: 12,
-    paddingHorizontal: 30,
-    borderRadius: 8,
+    backgroundColor: '#FC9905',
+    paddingVertical: 16,
+    borderRadius: 12,
+    width: '100%',
+    ...SHADOWS.medium,
   },
   buttonOutlineText: {
-    color: '#1e90ff',
-    fontSize: 16,
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
+    textAlign: 'center',
   },
 });

@@ -243,10 +243,10 @@ const Home = () => {
         </View>
       </View>
       {match.status === 'completed' && (
-        <View style={styles.winnerContainer}>
-          <Text style={styles.winnerText}>
+        <View style={[styles.winnerContainer, match.winner === 'draw' && styles.drawContainer]}>
+          <Text style={[styles.winnerText, match.winner === 'draw' && styles.drawText]}>
             {match.winner === 'draw' 
-              ? 'Match Drawn'
+              ? 'Match Draw'
               : `Winner: ${match.winner === match.team1Id ? match.team1 : match.team2}`
             }
           </Text>
@@ -572,15 +572,21 @@ const styles = StyleSheet.create({
     ...FONTS.body,
   },
   winnerContainer: {
-    backgroundColor: COLORS.lightSuccess,
+    backgroundColor: COLORS.lightGray,
     padding: 8,
     borderRadius: 8,
     marginTop: 8,
+  },
+  drawContainer: {
+    backgroundColor: COLORS.lightGray,
   },
   winnerText: {
     ...FONTS.body,
     color: COLORS.success,
     textAlign: 'center',
+  },
+  drawText: {
+    color: COLORS.gray,
   },
 });
 
