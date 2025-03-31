@@ -13,7 +13,7 @@ import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS, SHADOWS, FONTS } from '../constants/theme';
 import { auth, db } from '../services/firebase';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { DEFAULT_TEAMS } from '../services/teamService';
 
 const EditLeague = () => {
@@ -131,6 +131,33 @@ const EditLeague = () => {
       Alert.alert('Error', 'Failed to save team statistics');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleUpdateTeamName = async (teamId, newName) => {
+    try {
+      setLoading(true);
+      const teamRef = doc(db, 'teams', teamId);
+      await updateDoc(teamRef, {
+        name: newName,
+        updatedAt: serverTimestamp()
+      });
+      
+      // Update the local state
+      setTeams(prevTeams => 
+        prevTeams.map(team => 
+          team.id === teamId 
+            ? { ...team, name: newName }
+            : team
+        )
+      );
+      
+      Alert.alert('Success', 'Team name updated successfully!');
+    } catch (error) {
+      console.error('Error updating team name:', error);
+      Alert.alert('Error', 'Failed to update team name. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 

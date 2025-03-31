@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Alert,
   SafeAreaView,
+  Image,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -107,6 +108,40 @@ const LeagueScreen = () => {
     }
   };
 
+  const getTeamLogo = (teamName) => {
+    try {
+      const teamLogos = {
+        'Golden Eagles': require('../../assets/team-logos/golden-eagles.png'),
+        'Lion Kings': require('../../assets/team-logos/lion-kings.png'),
+        'Royal Tigers': require('../../assets/team-logos/royal-tigers.png'),
+        'Blazing Rhinos': require('../../assets/team-logos/blazing-rhinos.png'),
+        'Giant Sharks': require('../../assets/team-logos/giant-sharks.png'),
+        'Panthers': require('../../assets/team-logos/panthers.png'),
+      };
+      return teamLogos[teamName];
+    } catch (error) {
+      console.error('Error loading team logo:', error);
+      return null;
+    }
+  };
+
+  const renderTeamCell = (team) => (
+    <View style={styles.teamCell}>
+      {getTeamLogo(team.name) ? (
+        <Image
+          source={getTeamLogo(team.name)}
+          style={styles.teamLogo}
+          resizeMode="contain"
+        />
+      ) : (
+        <View style={styles.teamLogoPlaceholder}>
+          <MaterialCommunityIcons name="cricket" size={24} color={COLORS.primary} />
+        </View>
+      )}
+      <Text style={styles.teamName}>{team.name}</Text>
+    </View>
+  );
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -153,7 +188,7 @@ const LeagueScreen = () => {
                 onPress={() => router.push(`/team-details?id=${team.id}`)}
               >
                 <Text style={[styles.cell, styles.positionCell]}>{team.position}</Text>
-                <Text style={[styles.cell, styles.teamCell]} numberOfLines={1}>{team.name}</Text>
+                {renderTeamCell(team)}
                 <Text style={[styles.cell, styles.statsCell]}>{team.matchesPlayed}</Text>
                 <Text style={[styles.cell, styles.statsCell]}>{team.wins}</Text>
                 <Text style={[styles.cell, styles.statsCell]}>{team.losses}</Text>
@@ -172,7 +207,7 @@ const LeagueScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.lightGray,
+    backgroundColor: COLORS.white,
   },
   loadingContainer: {
     flex: 1,
@@ -182,21 +217,27 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     padding: 16,
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.white,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.lightGray,
     ...SHADOWS.small,
+    position: 'relative',
   },
   headerTitle: {
-    ...FONTS.title,
-    color: COLORS.white,
-    flex: 1,
+    ...FONTS.h2,
+    color: COLORS.primary,
     textAlign: 'center',
+    fontWeight: 'bold',
   },
   editButton: {
-    padding: 8,
     position: 'absolute',
     right: 16,
+    backgroundColor: COLORS.primary,
+    borderRadius: 8,
+    padding: 8,
+    ...SHADOWS.small,
   },
   scrollView: {
     flex: 1,
@@ -214,11 +255,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   tableContainer: {
-    flex: 1,
     margin: 16,
-    backgroundColor: COLORS.white,
     borderRadius: 12,
-    overflow: 'hidden',
+    backgroundColor: COLORS.white,
     ...SHADOWS.medium,
   },
   tableHeader: {
@@ -263,6 +302,46 @@ const styles = StyleSheet.create({
     color: COLORS.text,
     textAlign: 'center',
     fontSize: 14,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    backgroundColor: COLORS.primary,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+  },
+  row: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.lightGray,
+    backgroundColor: COLORS.white,
+  },
+  evenRow: {
+    backgroundColor: COLORS.lightGray,
+  },
+  teamLogo: {
+    width: 32,
+    height: 32,
+    marginRight: 8,
+    borderRadius: 16,
+    ...SHADOWS.small,
+  },
+  teamName: {
+    ...FONTS.body,
+    color: COLORS.text,
+    flex: 1,
+  },
+  title: {
+    ...FONTS.h2,
+    color: COLORS.primary,
+    marginBottom: 8,
+  },
+  teamLogoPlaceholder: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: COLORS.lightGray,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

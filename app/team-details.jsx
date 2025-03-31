@@ -52,10 +52,18 @@ const TeamDetails = () => {
         const data = teamDoc.data();
         const defaultTeam = DEFAULT_TEAMS[id];
         
+        // Process player stats
+        const players = (data.players || defaultTeam?.players || []).map(player => ({
+          ...player,
+          matches: player.stats?.batting?.balls || 0,
+          runs: player.stats?.batting?.runs || 0,
+          wickets: player.stats?.bowling?.wickets || 0
+        }));
+        
         setTeam({
           id: teamDoc.id,
           name: data.name || defaultTeam?.name || teamDoc.id,
-          players: data.players || defaultTeam?.players || [],
+          players: players,
           stats: {
             matchesPlayed: data.stats?.matchesPlayed || 0,
             wins: data.stats?.wins || 0,
