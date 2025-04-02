@@ -9,6 +9,7 @@ import {
   Alert,
   SafeAreaView,
   Image,
+  RefreshControl,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -21,6 +22,7 @@ const LeagueScreen = () => {
   const router = useRouter();
   const { refresh } = useLocalSearchParams();
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [teams, setTeams] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -142,6 +144,17 @@ const LeagueScreen = () => {
     </View>
   );
 
+  const onRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await loadTeams();
+    } catch (error) {
+      console.error('Error refreshing data:', error);
+    } finally {
+      setRefreshing(false);
+    }
+  }, []);
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -164,7 +177,17 @@ const LeagueScreen = () => {
         )}
       </View>
 
-      <ScrollView style={styles.scrollView}>
+      <ScrollView 
+        style={styles.scrollView}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[COLORS.primary]}
+            tintColor={COLORS.primary}
+          />
+        }
+      >
         {loading ? (
           <ActivityIndicator size="large" color={COLORS.primary} style={styles.loadingIndicator} />
         ) : teams.length === 0 ? (

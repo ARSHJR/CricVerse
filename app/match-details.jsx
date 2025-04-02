@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
+  RefreshControl,
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -25,6 +26,7 @@ const MatchDetails = () => {
   const { matchId, team1Id, team2Id, team1Name, team2Name } = useLocalSearchParams();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [team1Players, setTeam1Players] = useState([]);
   const [team2Players, setTeam2Players] = useState([]);
   const [activeTeam, setActiveTeam] = useState('team1');
@@ -336,6 +338,17 @@ const MatchDetails = () => {
     );
   };
 
+  const onRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await loadData();
+    } catch (error) {
+      console.error('Error refreshing data:', error);
+    } finally {
+      setRefreshing(false);
+    }
+  }, []);
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -402,7 +415,17 @@ const MatchDetails = () => {
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.scrollView}>
+      <ScrollView 
+        style={styles.scrollView}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[COLORS.primary]}
+            tintColor={COLORS.primary}
+          />
+        }
+      >
         {activeTeam === 'team1' ? 
           team1Players.map(player => renderPlayerStats(player, team1Id)) :
           team2Players.map(player => renderPlayerStats(player, team2Id))

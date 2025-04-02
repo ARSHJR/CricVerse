@@ -8,8 +8,9 @@ import {
   ActivityIndicator,
   Image,
   Alert,
+  SafeAreaView,
+  RefreshControl,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { auth, db } from '../../services/firebase';
@@ -35,11 +36,12 @@ const Home = () => {
   const { refresh } = useLocalSearchParams();
   const [activeTab, setActiveTab] = useState('upcoming');
   const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [matches, setMatches] = useState({
     upcoming: [],
     previous: [],
   });
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -263,6 +265,17 @@ const Home = () => {
     </TouchableOpacity>
   );
 
+  const onRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await loadMatches();
+    } catch (error) {
+      console.error('Error refreshing data:', error);
+    } finally {
+      setRefreshing(false);
+    }
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -273,7 +286,17 @@ const Home = () => {
         />
       </View>
 
-      <ScrollView style={styles.scrollView}>
+      <ScrollView 
+        style={styles.scrollView}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[COLORS.primary]}
+            tintColor={COLORS.primary}
+          />
+        }
+      >
         {/* User Profile Section */}
         <View style={styles.profileSection}>
           <View style={styles.profileInfo}>
